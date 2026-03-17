@@ -1,0 +1,5 @@
+.vercel
+dist
+dist-favicon-check
+node_modules
+package-lock.json
