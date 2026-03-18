@@ -55,9 +55,9 @@ const GlobalStyle = createGlobalStyle`
   }
 
   .rating_details {
-    z-index: 1 !important;
-    box-shadow: 0px 0px 0px 1px #11481e, 0px 1px 0px 2px #0d3817,
-      0px 3px 3px 1px #0003 !important;
+    z-index: 2 !important;
+    box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.28),
+      0px 10px 20px rgba(0, 0, 0, 0.72) !important;
   }
 
   .rating_value span:first-child {

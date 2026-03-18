@@ -103,6 +103,7 @@ const Overlay = styled.div`
   background: ${(p) => p.theme.colors.overlay};
   box-shadow: 0 0.25rem 2rem 0 rgba(5, 10, 13, 0.3);
   border-radius: 0 0 0.1875rem 0.1875rem;
+  z-index: 1;
 `;
 
 const OverlayRatings = styled.div`
@@ -127,6 +128,8 @@ const OverlayRatings = styled.div`
     background: none;
     box-shadow: 0 0.25rem 2rem 0 rgba(5, 10, 13, 0.3);
   }
+
+  z-index: 2;
 `;
 
 const Info = styled.div`
@@ -152,6 +155,8 @@ const InfoRatings = styled.div`
   width: 60px;
   text-align: center;
   font-weight: bold;
+  z-index: 2;
+  box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.72);
 `;
 
 const Title = styled(Text)`

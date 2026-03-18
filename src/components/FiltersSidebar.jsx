@@ -13,6 +13,22 @@ const SEASON_OPTIONS = [
   },
 ];
 
+const ORDER_OPTIONS = [
+  { label: "Top rated", value: "desc" },
+  { label: "Lowest rated", value: "asc" },
+];
+
+const STATUS_OPTIONS = [
+  { label: "All", value: "" },
+  { label: "Ended", value: "ended" },
+  { label: "Ongoing", value: "ongoing" },
+  { label: "Canceled", value: "canceled" },
+  { label: "Pilot", value: "pilot" },
+  { label: "Unknown", value: "unknown" },
+];
+
+const LIMIT_OPTIONS = ["20", "40", "60", "80", "100"];
+
 const GENRE_OPTIONS = [
   "Drama",
   "Crime",
@@ -88,6 +104,16 @@ const toggleStringFilter = (currentValue, optionValue) => {
   return buildStringValue([...currentValues]);
 };
 
+const includesSeasonFilter = (value, optionValues) => {
+  const currentValues = parseSeasonValues(value);
+  return optionValues.every((optionValue) =>
+    currentValues.includes(optionValue),
+  );
+};
+
+const includesStringFilter = (value, optionValue) =>
+  parseStringValues(value).includes(optionValue);
+
 const CloseButton = styled.button`
   background: none;
   border: none;
@@ -106,25 +132,38 @@ const Section = styled.section`
   }
 `;
 
-const CheckboxGroup = styled.div`
+const ChipGroup = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  padding-left: 0.25rem;
+  width: 100%;
+  min-width: 0;
 `;
 
-const CheckboxRow = styled.label`
-  display: flex;
-  align-items: center;
+const Chip = styled.button`
+  background: ${(p) =>
+    p.$active ? p.theme.colors.green : p.theme.colors.grey};
+  border: 1px solid
+    ${(p) => (p.$active ? p.theme.colors.green : p.theme.colors.midGrey)};
   color: ${(p) => p.theme.colors.white};
+  border-radius: 999px;
+  padding: ${(p) => (p.$compact ? "0.48rem 0.72rem" : "0.55rem 0.875rem")};
   cursor: pointer;
-`;
+  line-height: 1.2;
+  font-size: ${(p) => (p.$compact ? "0.92rem" : "1rem")};
+  white-space: ${(p) => (p.$compact ? "nowrap" : "normal")};
+  max-width: 100%;
+  text-align: center;
+  flex: ${(p) => (p.$fill ? "1 1 0" : "0 1 auto")};
 
-const Checkbox = styled.input`
-  width: 1.1rem;
-  height: 1.1rem;
-  margin: 0 0.65rem 0 0;
-  accent-color: ${(p) => p.theme.colors.green};
+  @media (max-width: 28rem) {
+    padding: ${(p) => (p.$compact ? "0.42rem 0.64rem" : "0.5rem 0.78rem")};
+    font-size: ${(p) => (p.$compact ? "0.86rem" : "0.95rem")};
+  }
+
+  &:focus {
+    ${(p) => p.theme.focusShadow}
+  }
 `;
 
 const FieldTitle = styled.h1`
@@ -146,8 +185,7 @@ const Field = styled.label`
     margin-top: 0;
   }
 
-  & input:not([type="checkbox"]),
-  & select {
+  & input {
     font-size: 1rem;
     line-height: 1.5rem;
     color: ${(p) => p.theme.colors.white};
@@ -158,15 +196,24 @@ const Field = styled.label`
     padding: 0 0.85rem;
   }
 
-  & select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    padding-right: 3rem;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.25L6 6.25L11 1.25' fill='none' stroke='%23FFFFFF' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 12px 8px;
+  & input::placeholder {
+    color: ${(p) => p.theme.colors.lightGrey};
+    opacity: 1;
+  }
+`;
+
+const FieldBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 1.35rem;
+  margin-bottom: 1.35rem;
+  color: ${(p) => p.theme.colors.lightGrey};
+  font-size: 1rem;
+  line-height: 1.5rem;
+
+  &:first-of-type {
+    margin-top: 0;
   }
 `;
 
@@ -197,214 +244,254 @@ const FiltersSidebar = ({
   onChange,
   onApply,
   onReset,
-}) => {
-  const selectedSeasons = parseSeasonValues(draftFilters.filteredSeasons);
-  const selectedGenres = parseStringValues(draftFilters.genres);
-  const selectedPlatforms = parseStringValues(draftFilters.platforms);
-
-  return (
-    <Sidebar
-      visible={visible}
-      onHide={onHide}
-      position="left"
-      showCloseIcon={false}
+}) => (
+  <Sidebar
+    visible={visible}
+    onHide={onHide}
+    position="left"
+    showCloseIcon={false}
+  >
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "flex-end",
+        marginBottom: "0.25rem",
+        paddingTop: "1rem",
+      }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginBottom: "0.25rem",
-        }}
-      >
-        <CloseButton type="button" onClick={onHide} aria-label="Close filters">
-          ×
-        </CloseButton>
-      </div>
+      <CloseButton type="button" onClick={onHide} aria-label="Close filters">
+        ×
+      </CloseButton>
+    </div>
 
-      <Section>
-        <Field>
-          <FieldTitle>
-            <strong>Order</strong>
-          </FieldTitle>
-          <select
-            value={draftFilters.order}
-            onChange={(event) => onChange("order", event.target.value)}
-          >
-            <option value="desc">Top rated</option>
-            <option value="asc">Lowest rated</option>
-          </select>
-        </Field>
-        <Field>
-          <FieldTitle>
-            <strong>Minimum rating</strong>
-          </FieldTitle>
-          <input
-            value={draftFilters.minimumRatings}
-            onChange={(event) => onChange("minimumRatings", event.target.value)}
-            placeholder="8.5"
-            type="number"
-            min="0"
-            max="10"
-            step="0.1"
-          />
-        </Field>
-        <Field>
-          <FieldTitle>
-            <strong>Minimum votes</strong>
-          </FieldTitle>
-          <input
-            value={draftFilters.minimumUsersRatingCount}
-            onChange={(event) =>
-              onChange("minimumUsersRatingCount", event.target.value)
-            }
-            placeholder="100"
-            type="number"
-            min="0"
-            step="1"
-          />
-        </Field>
-      </Section>
-
-      <Section>
-        <Field>
-          <FieldTitle>
-            <strong>Seasons</strong>
-          </FieldTitle>
-          <CheckboxGroup>
-            {SEASON_OPTIONS.map((option) => (
-              <CheckboxRow key={option.label}>
-                <Checkbox
-                  type="checkbox"
-                  checked={option.values.every((value) =>
-                    selectedSeasons.includes(value),
-                  )}
-                  onChange={() =>
-                    onChange(
-                      "filteredSeasons",
-                      toggleSeasonFilter(
-                        draftFilters.filteredSeasons,
-                        option.values,
-                      ),
-                    )
-                  }
-                />
-                <span>{option.label}</span>
-              </CheckboxRow>
-            ))}
-          </CheckboxGroup>
-        </Field>
-        <Field>
-          <FieldTitle>
-            <strong>From date</strong>
-          </FieldTitle>
-          <input
-            value={draftFilters.fromDate}
-            onChange={(event) => onChange("fromDate", event.target.value)}
-            type="date"
-          />
-        </Field>
-        <Field>
-          <FieldTitle>
-            <strong>To date</strong>
-          </FieldTitle>
-          <input
-            value={draftFilters.toDate}
-            onChange={(event) => onChange("toDate", event.target.value)}
-            type="date"
-          />
-        </Field>
-      </Section>
-
-      <Section>
-        <Field>
-          <FieldTitle>
-            <strong>Status</strong>
-          </FieldTitle>
-          <select
-            value={draftFilters.status}
-            onChange={(event) => onChange("status", event.target.value)}
-          >
-            <option value="">All</option>
-            <option value="ended">Ended</option>
-            <option value="ongoing">Ongoing</option>
-            <option value="canceled">Canceled</option>
-            <option value="pilot">Pilot</option>
-            <option value="unknown">Unknown</option>
-          </select>
-        </Field>
-        <Field>
-          <FieldTitle>
-            <strong>Genres</strong>
-          </FieldTitle>
-          <CheckboxGroup>
-            {GENRE_OPTIONS.map((genre) => (
-              <CheckboxRow key={genre}>
-                <Checkbox
-                  type="checkbox"
-                  checked={selectedGenres.includes(genre)}
-                  onChange={() =>
-                    onChange(
-                      "genres",
-                      toggleStringFilter(draftFilters.genres, genre),
-                    )
-                  }
-                />
-                <span>{genre}</span>
-              </CheckboxRow>
-            ))}
-          </CheckboxGroup>
-        </Field>
-        <Field>
-          <FieldTitle>
-            <strong>Platforms</strong>
-          </FieldTitle>
-          <CheckboxGroup>
-            {PLATFORM_OPTIONS.map((platform) => (
-              <CheckboxRow key={platform}>
-                <Checkbox
-                  type="checkbox"
-                  checked={selectedPlatforms.includes(platform)}
-                  onChange={() =>
-                    onChange(
-                      "platforms",
-                      toggleStringFilter(draftFilters.platforms, platform),
-                    )
-                  }
-                />
-                <span>{platform}</span>
-              </CheckboxRow>
-            ))}
-          </CheckboxGroup>
-        </Field>
-      </Section>
-
-      <Actions>
-        <Section style={{ marginTop: 0, marginBottom: "0.75rem" }}>
-          <Field style={{ marginBottom: 0 }}>
-            <FieldTitle>
-              <strong>Results per page</strong>
-            </FieldTitle>
-            <select
-              value={draftFilters.limit}
-              onChange={(event) => onChange("limit", event.target.value)}
+    <Section>
+      <FieldBlock>
+        <FieldTitle>
+          <strong>Order</strong>
+        </FieldTitle>
+        <ChipGroup>
+          {ORDER_OPTIONS.map((option) => (
+            <Chip
+              key={option.value}
+              type="button"
+              $fill
+              $active={draftFilters.order === option.value}
+              aria-pressed={draftFilters.order === option.value}
+              onClick={() => onChange("order", option.value)}
             >
-              <option value="20">20</option>
-              <option value="40">40</option>
-              <option value="60">60</option>
-              <option value="80">80</option>
-              <option value="100">100</option>
-            </select>
-          </Field>
-        </Section>
-        <Button type="button" variant="primary" onClick={onApply}>
-          Apply filters
-        </Button>
-        <Button type="button" onClick={onReset}>
-          Reset
-        </Button>
-      </Actions>
-    </Sidebar>
-  );
-};
+              {option.label}
+            </Chip>
+          ))}
+        </ChipGroup>
+      </FieldBlock>
+
+      <Field>
+        <FieldTitle>
+          <strong>Minimum rating</strong>
+        </FieldTitle>
+        <input
+          value={draftFilters.minimumRatings}
+          onChange={(event) => onChange("minimumRatings", event.target.value)}
+          placeholder="8.5"
+          type="number"
+          min="0"
+          max="10"
+          step="0.1"
+        />
+      </Field>
+
+      <Field>
+        <FieldTitle>
+          <strong>Minimum votes</strong>
+        </FieldTitle>
+        <input
+          value={draftFilters.minimumUsersRatingCount}
+          onChange={(event) =>
+            onChange("minimumUsersRatingCount", event.target.value)
+          }
+          placeholder="100"
+          type="number"
+          min="0"
+          step="1"
+        />
+      </Field>
+    </Section>
+
+    <Section>
+      <FieldBlock>
+        <FieldTitle>
+          <strong>Seasons</strong>
+        </FieldTitle>
+        <ChipGroup>
+          {SEASON_OPTIONS.map((option) => (
+            <Chip
+              key={option.label}
+              type="button"
+              $compact
+              $active={includesSeasonFilter(
+                draftFilters.filteredSeasons,
+                option.values,
+              )}
+              aria-pressed={includesSeasonFilter(
+                draftFilters.filteredSeasons,
+                option.values,
+              )}
+              onClick={() =>
+                onChange(
+                  "filteredSeasons",
+                  toggleSeasonFilter(
+                    draftFilters.filteredSeasons,
+                    option.values,
+                  ),
+                )
+              }
+            >
+              {option.label}
+            </Chip>
+          ))}
+        </ChipGroup>
+      </FieldBlock>
+
+      <Field>
+        <FieldTitle>
+          <strong>From date</strong>
+        </FieldTitle>
+        <input
+          value={draftFilters.fromDate}
+          onChange={(event) => onChange("fromDate", event.target.value)}
+          placeholder="YYYY-MM-DD"
+          type="date"
+        />
+      </Field>
+
+      <Field>
+        <FieldTitle>
+          <strong>To date</strong>
+        </FieldTitle>
+        <input
+          value={draftFilters.toDate}
+          onChange={(event) => onChange("toDate", event.target.value)}
+          placeholder="YYYY-MM-DD"
+          type="date"
+        />
+      </Field>
+    </Section>
+
+    <Section>
+      <FieldBlock>
+        <FieldTitle>
+          <strong>Status</strong>
+        </FieldTitle>
+        <ChipGroup>
+          {STATUS_OPTIONS.map((option) => (
+            <Chip
+              key={option.value || "all"}
+              type="button"
+              $active={
+                option.value
+                  ? includesStringFilter(draftFilters.status, option.value)
+                  : !draftFilters.status
+              }
+              aria-pressed={
+                option.value
+                  ? includesStringFilter(draftFilters.status, option.value)
+                  : !draftFilters.status
+              }
+              onClick={() =>
+                onChange(
+                  "status",
+                  option.value
+                    ? toggleStringFilter(draftFilters.status, option.value)
+                    : "",
+                )
+              }
+            >
+              {option.label}
+            </Chip>
+          ))}
+        </ChipGroup>
+      </FieldBlock>
+
+      <FieldBlock>
+        <FieldTitle>
+          <strong>Genres</strong>
+        </FieldTitle>
+        <ChipGroup>
+          {GENRE_OPTIONS.map((genre) => (
+            <Chip
+              key={genre}
+              type="button"
+              $active={includesStringFilter(draftFilters.genres, genre)}
+              aria-pressed={includesStringFilter(draftFilters.genres, genre)}
+              onClick={() =>
+                onChange(
+                  "genres",
+                  toggleStringFilter(draftFilters.genres, genre),
+                )
+              }
+            >
+              {genre}
+            </Chip>
+          ))}
+        </ChipGroup>
+      </FieldBlock>
+
+      <FieldBlock>
+        <FieldTitle>
+          <strong>Platforms</strong>
+        </FieldTitle>
+        <ChipGroup>
+          {PLATFORM_OPTIONS.map((platform) => (
+            <Chip
+              key={platform}
+              type="button"
+              $active={includesStringFilter(draftFilters.platforms, platform)}
+              aria-pressed={includesStringFilter(
+                draftFilters.platforms,
+                platform,
+              )}
+              onClick={() =>
+                onChange(
+                  "platforms",
+                  toggleStringFilter(draftFilters.platforms, platform),
+                )
+              }
+            >
+              {platform}
+            </Chip>
+          ))}
+        </ChipGroup>
+      </FieldBlock>
+    </Section>
+
+    <Actions>
+      <FieldBlock style={{ marginTop: 0, marginBottom: "1.1rem" }}>
+        <FieldTitle>
+          <strong>Results per page</strong>
+        </FieldTitle>
+        <ChipGroup>
+          {LIMIT_OPTIONS.map((value) => (
+            <Chip
+              key={value}
+              type="button"
+              $active={draftFilters.limit === value}
+              aria-pressed={draftFilters.limit === value}
+              onClick={() => onChange("limit", value)}
+            >
+              {value}
+            </Chip>
+          ))}
+        </ChipGroup>
+      </FieldBlock>
+
+      <Button type="button" variant="primary" onClick={onApply}>
+        Apply filters
+      </Button>
+      <Button type="button" onClick={onReset}>
+        Reset
+      </Button>
+    </Actions>
+  </Sidebar>
+);
 
 export default FiltersSidebar;

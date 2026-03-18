@@ -17,7 +17,7 @@ export const defaultFilters = {
   apiBase: "",
   order: "desc",
   minimumRatings: "",
-  minimumUsersRatingCount: "100",
+  minimumUsersRatingCount: "",
   filteredSeasons: "",
   status: "",
   genres: "",
@@ -43,7 +43,7 @@ const SearchbarWrap = styled(Searchbar)`
 `;
 
 const CardsGrid = styled.div`
-  margin-top: 2rem;
+  margin-top: 0;
   margin-bottom: 1rem;
   position: relative;
   z-index: 2;
@@ -71,6 +71,7 @@ const CardsGrid = styled.div`
 const MetaRow = styled.div`
   padding: 0 1rem;
   margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
   color: ${(p) => p.theme.colors.lightGrey};
   display: flex;
   align-items: center;
@@ -102,6 +103,10 @@ export const normalizeFilters = (filters) => ({
   apiBase: String(filters?.apiBase || "")
     .trim()
     .replace(/\/+$/, ""),
+  minimumUsersRatingCount:
+    String(filters?.minimumUsersRatingCount || "").trim() === "100"
+      ? ""
+      : String(filters?.minimumUsersRatingCount || "").trim(),
 });
 
 export const buildQueryString = (filters, page, titleQuery = "") => {
@@ -424,11 +429,6 @@ const App = () => {
 
         <Container>
           <MetaRow>
-            <span>
-              {filters.order === "asc"
-                ? "What's on? API - Lowest rated episodes"
-                : "What's on? API - Top rated episodes"}
-            </span>
             <span>
               {formatNumber(episodes.length)} loaded /{" "}
               {formatNumber(totalResults)} total

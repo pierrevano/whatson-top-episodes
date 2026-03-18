@@ -192,7 +192,7 @@ describe("App", () => {
     );
     expect(global.fetch).toHaveBeenNthCalledWith(
       2,
-      "https://whatson-api.onrender.com/episodes/rated?page=1&limit=20&order=desc&minimum_users_rating_count=100",
+      "https://whatson-api.onrender.com/episodes/rated?page=1&limit=20&order=desc",
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
     expect(
@@ -253,7 +253,7 @@ describe("App", () => {
     });
 
     expect(global.fetch).toHaveBeenLastCalledWith(
-      "https://whatson-api.onrender.com/episodes/rated?page=1&limit=20&order=desc&minimum_users_rating_count=100&title=f",
+      "https://whatson-api.onrender.com/episodes/rated?page=1&limit=20&order=desc&title=f",
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
 
@@ -325,7 +325,7 @@ describe("App", () => {
     });
 
     expect(global.fetch).toHaveBeenLastCalledWith(
-      "https://whatson-api.onrender.com/episodes/rated?page=1&limit=20&order=desc&minimum_users_rating_count=100&title=fin",
+      "https://whatson-api.onrender.com/episodes/rated?page=1&limit=20&order=desc&title=fin",
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
   });
@@ -391,7 +391,7 @@ describe("App", () => {
     });
 
     expect(global.fetch).toHaveBeenLastCalledWith(
-      "https://whatson-api.onrender.com/episodes/rated?page=1&limit=20&order=desc&minimum_users_rating_count=100",
+      "https://whatson-api.onrender.com/episodes/rated?page=1&limit=20&order=desc",
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
   });
@@ -475,7 +475,7 @@ describe("App", () => {
     });
 
     expect(global.fetch).toHaveBeenLastCalledWith(
-      "https://whatson-api.onrender.com/episodes/rated?page=1&limit=20&order=asc&minimum_users_rating_count=100&status=ended",
+      "https://whatson-api.onrender.com/episodes/rated?page=1&limit=20&order=asc&status=ended",
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
   });
@@ -513,7 +513,7 @@ describe("App", () => {
     await screen.findByText("Beta - Finale - ended");
 
     expect(global.fetch).toHaveBeenLastCalledWith(
-      "https://whatson-api.onrender.com/episodes/rated?page=2&limit=20&order=desc&minimum_users_rating_count=100",
+      "https://whatson-api.onrender.com/episodes/rated?page=2&limit=20&order=desc",
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
   });

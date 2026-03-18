@@ -11,7 +11,7 @@ const baseDraftFilters = {
   apiBase: "",
   order: "desc",
   minimumRatings: "",
-  minimumUsersRatingCount: "100",
+  minimumUsersRatingCount: "",
   filteredSeasons: "",
   status: "",
   genres: "",
@@ -73,24 +73,24 @@ describe("FiltersSidebar", () => {
     expect(screen.queryByText("Networks")).not.toBeInTheDocument();
   });
 
-  it("renders the updated results per page options", () => {
+  it("renders the updated results per page chip options", () => {
     renderSidebar();
 
-    expect(screen.getByRole("option", { name: "20" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "40" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "60" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "80" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "100" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "20" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "40" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "60" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "80" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "100" })).toBeInTheDocument();
     expect(
-      screen.queryByRole("option", { name: "12" }),
+      screen.queryByRole("button", { name: "12" }),
     ).not.toBeInTheDocument();
   });
 
-  it("toggles the seasons checkbox list with whatson naming", () => {
+  it("toggles the seasons chip list with whatson naming", () => {
     const onChange = vi.fn();
     renderSidebar({}, { onChange });
 
-    fireEvent.click(screen.getByRole("checkbox", { name: "5 and more" }));
+    fireEvent.click(screen.getByRole("button", { name: "5 and more" }));
 
     expect(onChange).toHaveBeenCalledWith(
       "filteredSeasons",
@@ -98,29 +98,51 @@ describe("FiltersSidebar", () => {
     );
   });
 
-  it("toggles genre and platform checkbox filters", () => {
+  it("toggles genre and platform chip filters", () => {
     const onChange = vi.fn();
     renderSidebar({ genres: "Drama", platforms: "" }, { onChange });
 
-    fireEvent.click(screen.getByRole("checkbox", { name: "Crime" }));
-    fireEvent.click(screen.getByRole("checkbox", { name: "Netflix" }));
+    fireEvent.click(screen.getByRole("button", { name: "Crime" }));
+    fireEvent.click(screen.getByRole("button", { name: "Netflix" }));
 
     expect(onChange).toHaveBeenNthCalledWith(1, "genres", "Drama,Crime");
     expect(onChange).toHaveBeenNthCalledWith(2, "platforms", "Netflix");
   });
 
-  it("renders the checkbox-based platform list and keeps networks removed", () => {
+  it("renders the chip-based platform list and keeps networks removed", () => {
     renderSidebar();
 
+    expect(screen.getByRole("button", { name: "Netflix" })).toBeInTheDocument();
     expect(
-      screen.getByRole("checkbox", { name: "Netflix" }),
+      screen.getByRole("button", { name: "Prime Video" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("checkbox", { name: "Prime Video" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("checkbox", { name: "Crunchyroll" }),
+      screen.getByRole("button", { name: "Crunchyroll" }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Networks")).not.toBeInTheDocument();
+  });
+
+  it("toggles order, status and limit chips", () => {
+    const onChange = vi.fn();
+    renderSidebar({ order: "desc", status: "", limit: "20" }, { onChange });
+
+    fireEvent.click(screen.getByRole("button", { name: "Lowest rated" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ended" }));
+    fireEvent.click(screen.getByRole("button", { name: "80" }));
+
+    expect(onChange).toHaveBeenNthCalledWith(1, "order", "asc");
+    expect(onChange).toHaveBeenNthCalledWith(2, "status", "ended");
+    expect(onChange).toHaveBeenNthCalledWith(3, "limit", "80");
+  });
+
+  it("supports multi-select status chips and clearing with All", () => {
+    const onChange = vi.fn();
+    renderSidebar({ status: "ended" }, { onChange });
+
+    fireEvent.click(screen.getByRole("button", { name: "Ongoing" }));
+    fireEvent.click(screen.getByRole("button", { name: "All" }));
+
+    expect(onChange).toHaveBeenNthCalledWith(1, "status", "ended,ongoing");
+    expect(onChange).toHaveBeenNthCalledWith(2, "status", "");
   });
 });
