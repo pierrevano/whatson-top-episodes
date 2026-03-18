@@ -2,6 +2,7 @@ import React from "react";
 import { fireEvent, screen } from "@testing-library/react";
 import EpisodeCard, { formatReleaseDate, formatVotes } from "./EpisodeCard";
 import renderWithTheme from "../test/renderWithTheme";
+import { RATING_BADGE_GREEN_BOX_SHADOW } from "../styles/GlobalStyle";
 
 describe("EpisodeCard", () => {
   it("formats release dates as yyyy-mm-dd", () => {
@@ -104,5 +105,31 @@ describe("EpisodeCard", () => {
     fireEvent.click(screen.getByRole("button", { name: "Load More" }));
 
     expect(onLoadMore).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the green rating badge treatment wired through the card and global styles", () => {
+    const { container } = renderWithTheme(
+      <EpisodeCard
+        episode={{
+          tvshow: {
+            id: 1,
+            title: "Alpha",
+            status: "Ended",
+            image: "",
+          },
+          title: "Pilot",
+          season: 2,
+          episode: 3,
+          release_date: "2024-05-03T12:30:00.000Z",
+          users_rating: 9.5,
+          users_rating_count: 12345,
+          url: "https://example.com/episode",
+        }}
+      />,
+    );
+
+    expect(container.querySelector(".rating_details")).toBeInTheDocument();
+    expect(RATING_BADGE_GREEN_BOX_SHADOW).toContain("#11481e");
+    expect(RATING_BADGE_GREEN_BOX_SHADOW).toContain("#0d3817");
   });
 });

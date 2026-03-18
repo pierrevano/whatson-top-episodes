@@ -156,7 +156,6 @@ const InfoRatings = styled.div`
   text-align: center;
   font-weight: bold;
   z-index: 2;
-  box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.72);
 `;
 
 const Title = styled(Text)`
