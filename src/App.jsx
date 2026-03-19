@@ -325,8 +325,8 @@ const App = () => {
   useEffect(() => {
     document.title =
       filters.order === "asc"
-        ? "What's on? API - Lowest rated episodes"
-        : "What's on? API - Top rated episodes";
+        ? "What's on? - Lowest rated episodes"
+        : "What's on? - Top rated episodes";
   }, [filters.order]);
 
   useEffect(() => {

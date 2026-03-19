@@ -19,7 +19,6 @@ const ORDER_OPTIONS = [
 ];
 
 const STATUS_OPTIONS = [
-  { label: "All", value: "" },
   { label: "Ended", value: "ended" },
   { label: "Ongoing", value: "ongoing" },
   { label: "Canceled", value: "canceled" },
@@ -163,6 +162,15 @@ const Chip = styled.button`
 
   &:focus {
     ${(p) => p.theme.focusShadow}
+  }
+`;
+
+const LimitChip = styled(Chip)`
+  font-size: 0.9rem;
+  white-space: nowrap;
+
+  @media (max-width: 28rem) {
+    font-size: 0.85rem;
   }
 `;
 
@@ -385,24 +393,17 @@ const FiltersSidebar = ({
         <ChipGroup>
           {STATUS_OPTIONS.map((option) => (
             <Chip
-              key={option.value || "all"}
+              key={option.value}
               type="button"
-              $active={
-                option.value
-                  ? includesStringFilter(draftFilters.status, option.value)
-                  : !draftFilters.status
-              }
-              aria-pressed={
-                option.value
-                  ? includesStringFilter(draftFilters.status, option.value)
-                  : !draftFilters.status
-              }
+              $active={includesStringFilter(draftFilters.status, option.value)}
+              aria-pressed={includesStringFilter(
+                draftFilters.status,
+                option.value,
+              )}
               onClick={() =>
                 onChange(
                   "status",
-                  option.value
-                    ? toggleStringFilter(draftFilters.status, option.value)
-                    : "",
+                  toggleStringFilter(draftFilters.status, option.value),
                 )
               }
             >
@@ -471,7 +472,7 @@ const FiltersSidebar = ({
         </FieldTitle>
         <ChipGroup>
           {LIMIT_OPTIONS.map((value) => (
-            <Chip
+            <LimitChip
               key={value}
               type="button"
               $active={draftFilters.limit === value}
@@ -479,7 +480,7 @@ const FiltersSidebar = ({
               onClick={() => onChange("limit", value)}
             >
               {value}
-            </Chip>
+            </LimitChip>
           ))}
         </ChipGroup>
       </FieldBlock>

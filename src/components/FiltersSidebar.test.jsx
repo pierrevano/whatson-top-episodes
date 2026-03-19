@@ -135,12 +135,12 @@ describe("FiltersSidebar", () => {
     expect(onChange).toHaveBeenNthCalledWith(3, "limit", "80");
   });
 
-  it("supports multi-select status chips and clearing with All", () => {
+  it("supports multi-select status chips and clearing by toggling the selected chip off", () => {
     const onChange = vi.fn();
     renderSidebar({ status: "ended" }, { onChange });
 
     fireEvent.click(screen.getByRole("button", { name: "Ongoing" }));
-    fireEvent.click(screen.getByRole("button", { name: "All" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ended" }));
 
     expect(onChange).toHaveBeenNthCalledWith(1, "status", "ended,ongoing");
     expect(onChange).toHaveBeenNthCalledWith(2, "status", "");

@@ -2,13 +2,13 @@
   <img src="./logo.png" alt="What's on? logo" width="90" />
 </p>
 
-<h1 align="center">What's on? API - Top rated episodes</h1>
+<h1 align="center">What's on? - Top rated episodes</h1>
 
 Powered by [What's on? API](https://github.com/pierrevano/whatson-api)
 
 ---
 
-What's on? API - Top rated episodes is a project built around the `GET /episodes/rated` endpoint from [What's on? API](https://github.com/pierrevano/whatson-api).
+What's on? - Top rated episodes is a project built around the `GET /episodes/rated` endpoint from [What's on? API](https://github.com/pierrevano/whatson-api).
 
 It surfaces the highest or lowest rated episodes.
 
