@@ -70,6 +70,7 @@ const AbsoluteFill = styled.div`
   display: flex;
   flex-direction: column-reverse;
   justify-content: space-between;
+  pointer-events: none;
 `;
 
 const OverflowHidden = styled(AbsoluteFill)`

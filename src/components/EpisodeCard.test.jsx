@@ -70,6 +70,38 @@ describe("EpisodeCard", () => {
     expect(screen.queryByText(/Netflix/)).not.toBeInTheDocument();
   });
 
+  it("renders a clickable outbound link to the episode url", () => {
+    renderWithTheme(
+      <EpisodeCard
+        episode={{
+          tvshow: {
+            id: 1,
+            title: "Alpha",
+            status: "Ended",
+            image: "",
+          },
+          title: "Pilot",
+          season: 2,
+          episode: 3,
+          release_date: "2024-05-03T12:30:00.000Z",
+          users_rating: 9.5,
+          users_rating_count: 12345,
+          url: "https://www.imdb.com/title/tt1234567/",
+        }}
+      />,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "poster for: Alpha Pilot",
+    });
+
+    expect(link).toHaveAttribute(
+      "href",
+      "https://www.imdb.com/title/tt1234567/",
+    );
+    expect(link).toHaveAttribute("target", "_blank");
+  });
+
   it("renders network names when the API returns network objects", () => {
     renderWithTheme(
       <EpisodeCard
